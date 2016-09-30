@@ -1,4 +1,5 @@
 # Summary
 
 * [Introduction](README.md)
-* [BucketTree](code-data-structure/BucketTree.md)
+* [code-data-structure](code-data-structure/README.md)
+    * [BucketTree](code-data-structure/BucketTree.md)
