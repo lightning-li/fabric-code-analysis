@@ -3,7 +3,7 @@
 ---
 
 #### 1. 介绍
-
+`BucketTree`是组织`worldstate`的一种数据结构，
 #### 2. 数据结构
 ```
 type dataKey struct {              type bucketKey struct {
