@@ -3,7 +3,10 @@
 ---
 
 #### 1. 介绍
-`BucketTree`是组织`worldstate`的一种数据结构，
+`BucketTree`是组织`world state`的一种数据结构，为了计算`world state`的加密哈希，这种方法建立了一种基于哈希表的桶之上的`merkle Tree`。
+
+作为该方法的核心，属于`world state`的`key-values`数据对假定被存储在由预先决定好数量的桶组成的哈希表中。一个哈希函数(`hashFunction`)被用来决定包含一个指定的`key`所需要桶的数量。
+
 #### 2. 数据结构
 ```
 type dataKey struct {              type bucketKey struct {
