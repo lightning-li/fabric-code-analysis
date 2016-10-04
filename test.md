@@ -20,9 +20,11 @@
 
 ________________________________________________________
 
-## 1. IntroductionThis document specifies the principles, architecture, and protocol of a blockchain implementation suitable for industrial use-cases.
+## 1. Introduction
+This document specifies the principles, architecture, and protocol of a blockchain implementation suitable for industrial use-cases.
 
-### 1.1 What is the fabric?The fabric is a ledger of digital events, called transactions, shared among different participants, each having a stake in the system. The ledger can only be updated by consensus of the participants, and, once recorded, information can never be altered. Each recorded event is cryptographically verifiable with proof of agreement from the participants.
+### 1.1 What is the fabric?
+The fabric is a ledger of digital events, called transactions, shared among different participants, each having a stake in the system. The ledger can only be updated by consensus of the participants, and, once recorded, information can never be altered. Each recorded event is cryptographically verifiable with proof of agreement from the participants.
 
 Transactions are secured, private, and confidential. Each participant registers with proof of identity to the network membership services to gain access to the system. Transactions are issued with derived certificates unlinkable to the individual participant, offering a complete anonymity on the network. Transaction content is encrypted with sophisticated key derivation functions to ensure only intended participants may see the content, protecting the confidentiality of the business transactions.
 
@@ -33,3 +35,10 @@ The fabric is an implementation of blockchain technology, where Bitcoin could be
 ### 1.2 Why the fabric?
 
 Early blockchain technology serves a set of purposes but is often not well-suited for the needs of specific industries. To meet the demands of modern markets, the fabric is based on an industry-focused design that addresses the multiple and varied requirements of specific industry use cases, extending the learning of the pioneers in this field while also addressing issues such as scalability. The fabric provides a new approach to enable permissioned networks, privacy, and confidentially on multiple blockchain networks.
+
+#### 2.1.2 Blockchain Services
+Blockchain services manage the distributed ledger through a peer-to-peer protocol, built on HTTP/2. The data structures are highly optimized to provide the most efficient hash algorithm for maintaining the world state replication. Different consensus (PBFT, Raft, PoW, PoS) may be plugged in and configured per deployment.
+
+#### 2.1.3 Chaincode Services
+Chaincode services provides a secured and lightweight way to sandbox the chaincode execution on the validating nodes. The environment is a “locked down” and secured container along with a set of signed base images containing secure OS and chaincode language, runtime and SDK layers for Go, Java, and Node.js. Other languages can be enabled if required.
+
