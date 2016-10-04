@@ -58,7 +58,8 @@ if err != nil {
 fmt.Println(viper.Get("name"))      //假设配置文件中包含name属性，那么 Get 可以得到该属性对应的值
 ```
 
-####
+#### 观察并且重新读取配置文件(Watching and re-reading config files)
+
 
 
 
