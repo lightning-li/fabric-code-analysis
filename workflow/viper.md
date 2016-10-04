@@ -33,3 +33,12 @@
 - `config`
 - `key/value store`
 - `default`
+
+### Putting Values into Viper
+#### 设置默认值
+例子：
+
+```
+viper.setDefault("ContentDir", "content")
+viper.setDefault("Student", map[string]string{"name" : "lk", "age" : 12})
+```
