@@ -46,8 +46,19 @@ viper.setDefault("Student", map[string]string{"name" : "lk", "age" : 12})
 
 #### 读取配置文件
 
-当前，一个 Viper 的实例只支持一个配置文件，Viper 并没有默认配置文件的搜索路径，所以应用程序需要告诉 Viper 实例配置文件的路径，这里有一个如何使用 Viper 搜索并读取配置文件的例子
+当前，一个 Viper 的实例只支持一个配置文件，Viper 并没有默认配置文件的搜索路径，所以应用程序需要告诉 Viper 实例配置文件的路径，这里有一个如何使用 Viper 搜索并读取配置文件的例子：
+```
+viper.SetConfigName("config")          //配置文件的名称(不需要扩展名)
+viper.AddConfigPath(".")              //将当前目录加入到 viper 的搜索路径中
+viper.AddConfigPath("$HOME/somedir")  //可多次调用AddConfigPath函数，注意：若多个搜索路径中均包含指定的配置文件，默认读取的是一个添加的搜索路径里的配置文件
+err := viper.ReadInConfig()          //搜索并且读取配置文件
+if err != nil {
+    panic(fmt.Errorf("Fatal error config file : %s \n", err))
+}
+fmt.Println(viper.Get("name"))      //假设配置文件中包含name属性，那么 Get 可以得到该属性对应的值
+```
 
+####
 
 
 
