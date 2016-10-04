@@ -35,6 +35,7 @@
 - `default`
 
 ### Putting Values into Viper
+------------------------------
 #### 设置默认值
 例子：
 
@@ -42,3 +43,21 @@
 viper.setDefault("ContentDir", "content")
 viper.setDefault("Student", map[string]string{"name" : "lk", "age" : 12})
 ```
+
+#### 读取配置文件
+
+当前，一个 Viper 的实例只支持一个配置文件，Viper 并没有默认配置文件的搜索路径，所以应用程序需要告诉 Viper 实例配置文件的路径，这里有一个如何使用 Viper 搜索并读取配置文件的例子
+
+
+
+
+
+
+
+
+
+
+
+
+
+
