@@ -1,15 +1,5 @@
 ### peer 服务的工作流程
 
-## Table of Contents
-#### [1. Introduction](#1-introduction_1)
- - [1.1 What is the fabric?](#11-what-is-the-fabric)
- - [1.2 Why the fabric?](#12-why-the-fabric)
- - [1.3 Terminology](#13-terminology)
-
-
-
-
-
 **1. 启动（CLI）**
 
 peer 服务可以通过命令行的方式来启动，比如，`peer node start`就可以启动一个peer服务，相应的配置可以从peer/core.yaml中读取。接下来分析一下代码中使用的 `cobra` 库和 `viper` 库\(均出自spf13大神之手\)。
@@ -20,20 +10,3 @@ peer 服务可以通过命令行的方式来启动，比如，`peer node start`�
 
 `fabric peer`
 
-
-
-
-
-
-
-
-
-
-
-
-
-### 1.2 Why the fabric?
-
-
-
-Early blockchain technology serves a set of purposes but is often not well-suited for the needs of specifi
