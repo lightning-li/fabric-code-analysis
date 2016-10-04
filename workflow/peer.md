@@ -7,9 +7,7 @@
  - [1.3 Terminology](#13-terminology)
 
 
-### 1.2 Why the fabric?
 
-Early blockchain technology serves a set of purposes but is often not well-suited for the needs of specifi
 
 
 **1. 启动（CLI）**
@@ -22,3 +20,20 @@ peer 服务可以通过命令行的方式来启动，比如，`peer node start`�
 
 `fabric peer`
 
+
+
+
+
+
+
+
+
+
+
+
+
+### 1.2 Why the fabric?
+
+
+
+Early blockchain technology serves a set of purposes but is often not well-suited for the needs of specifi
