@@ -60,12 +60,13 @@ fmt.Println(viper.Get("name"))      //假设配置文件中包含name属性，�
 
 #### 观察并且重新读取配置文件(Watching and re-reading config files)
 
-
-
-
-
-
-
+viper 支持你的应用程序运行时观察到并读取配置文件的改变，重启服务才能让你的配置文件生效已经成为过去，viper 可以很轻松的帮助你读取到更新过后的文件，告诉 viper 实例观察配置文件(WatchConfig)，你还可以传进去一个函数来告诉 viper 实例当配置文件改变时应该做什么，例如
+```
+viper.WatchConfig()
+viper.OnConfigChange(fun (e fsnotify.Event) {
+    fmt.Println("config files changed, afer change, the name become : ", viper.Get("name"))
+})
+```
 
 
 
