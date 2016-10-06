@@ -87,8 +87,8 @@ viper.ReadConfig(bytes.NewBuffer(yaml_ex))
 fmt.Println("name ", viper.Get("name"))
 ```
 
+#### 注册并使用别名(Registering and Using Aliases)
+Aliases允许一个值多个键引用，例如
+```
 
-
-
-
-
+```
