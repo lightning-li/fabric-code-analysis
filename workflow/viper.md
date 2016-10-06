@@ -96,4 +96,4 @@ fmt.Println("Loud ", viper.Get("Loud"))        //输出：Loud haha
 fmt.Println("verbose ", viper.Get("verbose"))  //输出：verbose haha
 ```
 
-#### 
+#### viper 使用环境变量
