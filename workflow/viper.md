@@ -109,3 +109,6 @@ viper 提供了一种机制来保证环境变量是唯一的，通过使用`SetE
 
 `BindEnv` 函数需要一个或两个参数，第一个参数为 key，第二个参数为环境变量的名称，当只有一个参数的时候，viper 会自动去环境变量中匹配第一个 key 参数(注意，此时 key 会被 viper 实例自动转换为大写)；当有两个参数的时候，viper 会将该 key 与指定的环境变量名称绑定。注意：如果显示指定了两个参数，则 `BindEnv` 不会自动加上前缀。
 
+需要认识到的是，每一次 viper 实例访问环境变量的时候，都会重新读取，`BindEnv` 并不会将 key 与值相固定
+
+`AutomaticEnv` 与 `SetEnvPrefix` 结合的时候相当强大，`AutomaticEnv` 被调用后，每一次调用`viper.Get`，viper 将会检查环境变量。viper 实例会自动将前缀加在 key (自动被转换为大写字母)上，如果 `SetEnvPrefix` 被调用的话。
