@@ -112,3 +112,4 @@ viper 提供了一种机制来保证环境变量是唯一的，通过使用`SetE
 需要认识到的是，每一次 viper 实例访问环境变量的时候，都会重新读取，`BindEnv` 并不会将 key 与值相固定
 
 `AutomaticEnv` 与 `SetEnvPrefix` 结合的时候相当强大，`AutomaticEnv` 被调用后，每一次调用`viper.Get`，viper 将会检查环境变量。viper 实例会自动将前缀加在 key (自动被转换为大写字母)上，如果 `SetEnvPrefix` 被调用的话。
+
