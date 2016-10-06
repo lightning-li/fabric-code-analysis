@@ -97,3 +97,8 @@ fmt.Println("verbose ", viper.Get("verbose"))  //输出：verbose haha
 ```
 
 #### viper 使用环境变量
+viper 使用以下四种方法与环境变量打交道：
+- `AutomaticEnv()`
+- `BindEnv(string...) : error`
+- `SetEnvPrefix(string)`
+- `SetEnvReplacer(string...) : *strings.Replacer`
