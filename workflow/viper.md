@@ -90,5 +90,8 @@ fmt.Println("name ", viper.Get("name"))
 #### 注册并使用别名(Registering and Using Aliases)
 Aliases允许一个值多个键引用，例如
 ```
-
+viper.RegisterAlias("Loud", "Verbose")
+viper.Set("loud", "haha")                      //viper 不区分大小写
+fmt.Println("Loud ", viper.Get("Loud"))        //输出：Loud haha
+fmt.Println("verbose ", viper.Get("verbose"))  //输出：verbose haha
 ```
