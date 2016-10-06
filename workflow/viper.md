@@ -128,3 +128,5 @@ fmt.Println(viper.Get("hash"))             //输出：54321
 viper.BindEnv("hash")
 fmt.Println(viper.Get("hash"))             //输出：12345
 ```
+
+#### viper 使用 flags
