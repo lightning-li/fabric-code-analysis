@@ -68,6 +68,9 @@ viper.OnConfigChange(fun (e fsnotify.Event) {
 })
 ```
 
+#### Reading Config from io.Reader
+
+viper 预定义了很多配置源，例如文件、环境变量、flags 和远程 key/value 存储，但是你不会被局限于此，你可以定义自己的配置文件源，并将其送给 viper， 例如
 
 
 
