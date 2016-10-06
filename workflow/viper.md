@@ -101,4 +101,7 @@ viper 使用以下四种方法与环境变量打交道：
 - `AutomaticEnv()`
 - `BindEnv(string...) : error`
 - `SetEnvPrefix(string)`
-- `SetEnvReplacer(string...) : *strings.Replacer`
+- `SetEnvKeyReplacer(*strings.Replacer)`
+
+需要认识到的是，viper 与环境变量打交道时，是大小写敏感的。
+viper 提供了一种机制来保证环境变量是唯一的，
