@@ -113,3 +113,4 @@ viper 提供了一种机制来保证环境变量是唯一的，通过使用`SetE
 
 `AutomaticEnv` 与 `SetEnvPrefix` 结合的时候相当强大，`AutomaticEnv` 被调用后，每一次调用`viper.Get`，viper 将会检查环境变量。viper 实例会自动将前缀加在 key (自动被转换为大写字母)上，如果 `SetEnvPrefix` 被调用的话。
 
+`SetEnvKeyReplacer` 允许你使用 `strings.Replacer` 对象在某种程度上重写环境变量，比如你想在 `viper.Get` 调用中使用 `-` 或者别的间隔符，而在环境变量中使用 `_` 间隔符的时候，`SetEnvKeyReplacer` 是很有用的。 
