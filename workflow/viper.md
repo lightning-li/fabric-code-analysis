@@ -77,13 +77,14 @@ var yaml_ex = []byte(`
 name : kk
 age : 23
 wife :
-    name : ss
+    name : ss           //注意：yaml文件只支持前面是空格，不支持tab键，所以确保属性的前面是空格而不是tab键
     age : 23
 subject :
     - math
     - computer
 `)
-
+viper.ReadConfig(bytes.NewBuffer(yaml_ex))
+fmt.Println("name ", viper.Get("name"))
 ```
 
 
