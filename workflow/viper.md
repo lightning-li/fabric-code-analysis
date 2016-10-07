@@ -130,3 +130,7 @@ fmt.Println(viper.Get("hash"))             //输出：12345
 ```
 
 #### viper 使用 flags
+
+Viper 可以绑定到 flags，Viper 支持 `Pflags` (也在 cobra 库中使用)。
+
+像 `BindEnv`，当绑定函数被调用的时候，值是没有被设置的，直到被访问的时候。这意味着你可以想多早就多早绑定，甚至可以在 `init` 函数内。
