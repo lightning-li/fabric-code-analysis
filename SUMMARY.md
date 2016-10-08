@@ -6,4 +6,5 @@
 * [workflow](workflow/README.md)
     * [peer](workflow/peer.md)
     * [viper](workflow/viper.md)
+    * [protos](workflow/protos.md)
 * [test](test.md)
