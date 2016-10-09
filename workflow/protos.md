@@ -45,3 +45,21 @@ message ChaincodeMessage {
 ```
 
 其中 `payload` 是调用 chaincode 所需要的函数以及参数字符串数组构成的 `ChaincodeInput` 结构序列化过后的字节数组，注意： 与 `securityContext` 里包含的 `payload` 是相同的。
+
+#### ChaincodeSecurityContext
+
+这个结构维护了我们向 chaincode container shim 发送所需要数据的结构，允许 chaincode 通过 shim 接口来访问。
+
+TODO：考虑移除该消息，然后将 transaction 对象直接传给 shim 并且(或者)允许 chaincode 查询 transaction。
+
+```
+message ChaincodeSecurityContext {
+    bytes callerCert = 1;
+    bytes callerSign = 2;
+    bytes payload = 3;
+    bytes binding = 4;
+    bytes metadata = 5;
+    bytes parentMetadata = 6;
+    google.protobuf.Timestamp txTimestamp = 7; // transaction timestamp
+}
+```
