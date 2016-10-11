@@ -132,7 +132,7 @@ message ChaincodeInvocationSpec {
 
 #### Transaction
 
-Transaction 消息是
+Transaction 定义了对某一个合约的函数调用
 
 ```
 message Transaction {
