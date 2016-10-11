@@ -63,3 +63,104 @@ message ChaincodeSecurityContext {
     google.protobuf.Timestamp txTimestamp = 7; // transaction timestamp
 }
 ```
+
+#### ChaincodeSpec
+
+这个结构包含了 chaincode 的具体内容，比如，使用 CLI 或者 REST 接口与 NVP 或者 VP 进行交互时，传给 NVP 或者 VP 的就是 ChaincodeSpec 消息，NVP 或者 VP 收到该消息后，根据传进该消息时的请求类别(invoke、deploy)，将 ChaincodeSpec 消息封装成相应的 ChaincodeDeploymentSpec 或者 ChaincodeInvocationSpec 消息；然后再次将处理后的消息进行封装成 Transaction 消息。
+
+```
+message ChaincodeSpec {
+
+    enum Type {
+        UNDEFINED = 0;
+        GOLANG = 1;
+        NODE = 2;
+        CAR = 3;
+        JAVA = 4;
+    }
+
+    Type type = 1;
+    ChaincodeID chaincodeID = 2;
+    ChaincodeInput ctorMsg = 3;
+    int32 timeout = 4;
+    string secureContext = 5;
+    ConfidentialityLevel confidentialityLevel = 6;
+    bytes metadata = 7;
+    repeated string attributes = 8;
+}
+```
+
+#### ChaincodeDeploymentSpec
+
+该结构具体定义了 chaincode deploy 的内容
+
+TODO：定义 codePackage
+
+```
+message ChaincodeDeploymentSpec {
+
+    enum ExecutionEnvironment {
+        DOCKER = 0;
+        SYSTEM = 1;
+    }
+
+    ChaincodeSpec chaincodeSpec = 1;
+    // Controls when the chaincode becomes executable.
+    google.protobuf.Timestamp effectiveDate = 2;
+    bytes codePackage = 3;
+    ExecutionEnvironment execEnv=  4;
+
+}
+```
+
+#### ChaincodeInvocationSpec
+
+```
+message ChaincodeInvocationSpec {
+
+    ChaincodeSpec chaincodeSpec = 1;
+    // This field can contain a user-specified ID generation algorithm
+    // If supplied, this will be used to generate a ID
+    // If not supplied (left empty), sha256base64 will be used
+    // The algorithm consists of two parts:
+    //  1, a hash function
+    //  2, a decoding used to decode user (string) input to bytes
+    // Currently, SHA256 with BASE64 is supported (e.g. idGenerationAlg='sha256base64')
+    string idGenerationAlg = 2;
+}
+```
+
+#### Transaction
+
+Transaction 消息是
+
+```
+message Transaction {
+    enum Type {
+        UNDEFINED = 0;
+        // deploy a chaincode to the network and call `Init` function
+        CHAINCODE_DEPLOY = 1;
+        // call a chaincode `Invoke` function as a transaction
+        CHAINCODE_INVOKE = 2;
+        // call a chaincode `query` function
+        CHAINCODE_QUERY = 3;
+        // terminate a chaincode; not implemented yet
+        CHAINCODE_TERMINATE = 4;
+    }
+    Type type = 1;
+    //store ChaincodeID as bytes so its encrypted value can be stored
+    bytes chaincodeID = 2;
+    bytes payload = 3;
+    bytes metadata = 4;
+    string txid = 5;
+    google.protobuf.Timestamp timestamp = 6;
+
+    ConfidentialityLevel confidentialityLevel = 7;
+    string confidentialityProtocolVersion = 8;
+    bytes nonce = 9;
+
+    bytes toValidators = 10;
+    bytes cert = 11;
+    bytes signature = 12;
+}
+```
