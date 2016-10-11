@@ -132,8 +132,7 @@ message ChaincodeInvocationSpec {
 
 #### Transaction
 
-Transaction 定义了对某一个合约的函数调用
-
+Transaction 定义了对某一个合约的函数调用，其中 chaincodeID 是 ChaincodeSpec 中的 chaincodeID 通过 protobuf 协议序列号化过后的字节序列
 ```
 message Transaction {
     enum Type {
