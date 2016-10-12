@@ -68,6 +68,10 @@ message ChaincodeSecurityContext {
 
 这个结构包含了 chaincode 的具体内容，比如，使用 CLI 或者 REST 接口与 NVP 或者 VP 进行交互时，传给 NVP 或者 VP 的就是 ChaincodeSpec 消息，NVP 或者 VP 收到该消息后，根据传进该消息时的请求类别(invoke、deploy)，将 ChaincodeSpec 消息封装成相应的 ChaincodeDeploymentSpec 或者 ChaincodeInvocationSpec 消息；然后再次将处理后的消息进行封装成 Transaction 消息。
 
+当 deploy 时，Metadata 为 `adminCert.GetCertificate()`
+
+当 invoke 时，Metadata 为 `sigma`，
+
 ```
 message ChaincodeSpec {
 
@@ -132,7 +136,15 @@ message ChaincodeInvocationSpec {
 
 #### Transaction
 
-Transaction 定义了对某一个合约的函数调用，其中 chaincodeID 是 ChaincodeSpec 中的 chaincodeID 通过 protobuf 协议序列号化过后的字节序列
+Transaction 定义了对某一个合约的函数调用。
+
+当是 deploy 交易的时候，其中 chaincodeID 是 ChaincodeSpec 中的 chaincodeID 通过 protobuf 协议序列号化过后的字节序列， payload 为 ChaincodeDeploymentSpec 对象 通过 protobuf 协议序列化过后的字节序列，metadata 为 ChaincodeSpec 对象中的 metadata，若程序运行是在开发模式(`peer node start --peer-chaincodedev`)下，则 txid 为 ChaincodeSpec 对象中的 ChaincodeID.name，若程序运行在正常模式下，则 txid 为包含 chaincode 在内的 container 的哈希值。
+
+当是 invoke 交易的时候，其中 txid 为 `util.GenerateUUID()` 生成，chaincodeID 是，
+
+
+cert 是 `tCert.GetCertificate().Raw`， signature 是 `tCert.Sign(rawTx)`， 其中 `rawTx = proto.Marshal(tx)`，tx 为本交易内容
+
 ```
 message Transaction {
     enum Type {
