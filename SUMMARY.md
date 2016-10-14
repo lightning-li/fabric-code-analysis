@@ -7,4 +7,5 @@
     * [peer](workflow/peer.md)
     * [viper](workflow/viper.md)
     * [protos](workflow/protos.md)
+* [v1.0 architecture](architecture/README.md)
 * [test](test.md)
