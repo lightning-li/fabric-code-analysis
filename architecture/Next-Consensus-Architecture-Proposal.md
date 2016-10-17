@@ -136,6 +136,8 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 
 - *可用性 (Liveness)。* 如果一个正确的 peer 唤醒了 `broadcast(blob)` 事件，那么每一个正确的 peer 最终都会发行一个 `deliver(*, *, blob)` 事件，* 代表任意值。
 
+---
+
 #### 2. 交易背书的基本流程
 
 接下来我们将给出交易请求工作流程的大概轮廓。
@@ -269,6 +271,8 @@ submitting peer 等待直至它收集到足够的消息和签名 (对于`<TRANSA
 
 另外，submitting peer 通知客户端丢弃的交易。如果 `retryFlag` 被设置，那么 submitting peer 也许 (根据自身策略) 会从 step 2 重试提交过程。
 
-#### Transaction flow
+![交易的工作流程](/images/2016/10/Transaction-flow.png)
 
-![交易的工作流程](images/2016/10/Transaction-flow.png)
+图 1. 交易的流程插图 (通常情况下) 
+
+---
