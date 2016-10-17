@@ -9,7 +9,7 @@
 本篇记录了区块链基础设施的架构，每一个区块链中的节点角色被划分为 *peers* 角色(维护状态和总账)和 *consenters* 角色(对包含在区块链状态里的交易最终顺序达成共识)。在大部分区块链架构中(包括2016年7月份版本的 Hyperledger fabric)，这些角色是统一的(例如Hyperledger fabric 里的验证节点)。该架构同时引进了 *endorsing peers* ，一种特殊类型的 *peers*，来负责模拟执行和为交易背书(对应于 Hyperledger fabric 0.5 版本中执行和验证交易的行为)。
 
 该架构与以前的设计( peers/consenters/endorsers 是一体的)相比有以下优势：
-- **链上编码信任的灵活性(Chaincode trust flexibility)**。该架构使对链上编码的信任假设从对共识的信任假设中分离开来。换一种方式来说，共识服务可以由一系列的节点(consenters)来提供，允许部分节点失败或者有恶意行为；而对于每一个链上编码 endorsers 可以是不同的。
+- **链上编码信任的灵可用性(Chaincode trust flexibility)**。该架构使对链上编码的信任假设从对共识的信任假设中分离开来。换一种方式来说，共识服务可以由一系列的节点(consenters)来提供，允许部分节点失败或者有恶意行为；而对于每一个链上编码 endorsers 可以是不同的。
 
 - **可扩展性(Scalability)**。 当负责特指的链上编码的 endorser 节点与 consenters 节点是统计上独立的时候，系统的扩展性相对于全部的功能被相同的节点实现这一方式要更好。尤其是，当不同的链上编码定义了不相交的 endorsers 集合的时候，这样就会产生链上编码之间的分离，可以允许并行的执行链上编码(endorsement)。还会将可能很耗时的链上编码的执行过程也与共识服务过程分离开来。
 
@@ -100,7 +100,7 @@ Peers 有以下两种角色组成。
 
 Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信的管道给 peers，该管道提供包含交易的消息的广播服务。Peers 连接上这个管道，用来发送和接收消息。管道支持所有消息原子性的传输，也就是，消息的传输是一个完全有序的并且可靠的。换句话说，管道向所有连接它的 peers 输出相同的消息并且消息是相同逻辑顺序的。原子性的交流通信也被称为*完全有序的广播 (total-order broadcast)* 或者是分布式系统中的共识。通过管道传播的消息是要包括进区块链状态的候选交易。
 
-**分割 (共识管道) (Patitioning (consensus channels))。** 与发布/订阅消息系统的*主题(Topics)* 相似，共识服务可以支持多管道。客户端连接到一个给定的管道上，然后发送消息和获取到达的消息。多管道可以被认为是隔离的 - 客户端不会意识到其它管道的存在，但是客户端可以连接多个管道。简单起见，在本篇文献的剩余部分，除非显示地提到，否则我们假设共识服务由单 channel/topic组成。
+**分割 (共识管道) (Patitioning (consensus channels))。** 与发布/订阅消息系统的*主题(Topics)* 相似，共识服务可以支持多管道。客户端连接到一个给定的管道上，然后发送消息和获取到达的消息。多管道可以被认为是隔离的 - 客户端不会意识到其它管道的存在，但是客户端可以连接多个管道。简单起见，在本篇文献的剩余部分，除非显示地提到，否则我们假设共识服务由单 channel/topic 组成。
 
 **共识服务程序接口 (Consensus service API)。** Peers 通过共识服务提供的程序接口连接到由共识服务提供的管道上。共识服务程序接口由两个基本的操作组成 (更为普遍是*异步事件* - *asynchronous events*)：
 
@@ -117,7 +117,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 
     此外，`deliver()` 事件 包括前一个 `deliver()` 事件的加密哈希值 (prevhash)。当共识服务实现了原子性广播的保证后，`prevhash` 是带有序列号为 `seqno-1` 的 `deliver()`事件的加密哈希。这就建立了一条跨 `deliver()` 事件的哈希链，可以被用来帮助验证共识服务输出的完整性，会在第四章和第五章有详细讨论。在特殊的第一个 `deliver()` 事件里，`prevhash` 有一个默认值。
 
-2. **活性 (传送保证) (Liveness (delivery guarantee) )**：共识服务的活性保证通过具体的共识服务实现来定义，依赖于网络和节点错误模型。
+2. **可用性 (传送保证) (Liveness (delivery guarantee) )**：共识服务的可用性保证通过具体的共识服务实现来定义，依赖于网络和节点错误模型。
 
     原则上来讲，如果 submitting peer 不会失败，共识服务应该保证每一个连接到共识服务的节点最终会收到每一笔提交的交易。
 
@@ -134,7 +134,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 - *不会重复 (No duplication) (可选的，强烈需要的)。* 对于任何两个事件 `broadcast(blob)` 和 `broadcast(blob')`，当两个事件 `deliver(seqno0, prevhash0, blob)` 和 `deliver(seqno1, prevhash1, blob')` 发生在正确的 peer 的时候，并且 `blob==blob'`，那么有 `seqno0==seqno1` 和 `prevhash0==prevhash1`。
 (译者：跨 `deliver()` 事件的哈希链中不会出现两个具有相同 `blob` 的事件)
 
-- *活性 (Liveness)。* 如果一个正确的 peer 唤醒了 `broadcast(blob)` 事件，那么每一个正确的 peer 最终都会发行一个 `deliver(*, *, blob)` 事件，* 代表任意值。
+- *可用性 (Liveness)。* 如果一个正确的 peer 唤醒了 `broadcast(blob)` 事件，那么每一个正确的 peer 最终都会发行一个 `deliver(*, *, blob)` 事件，* 代表任意值。
 
 #### 2. 交易背书的基本流程
 
@@ -152,8 +152,11 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 - `tx=<clientID, chaincodeID, txPayload, clientSig>`:
 
   - `clientID` 是 submitting client 的  ID，
+
   - `chaincodeID` 指向交易属于的 chaincode，
+
   - `txPayload` 是包含提交的交易内容的有效载荷，
+
   - `clientSig` 是客户端对 `tx` 其它部分的签名。
 
 
@@ -164,6 +167,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 - `invocation = <operation, metadata>`，
 
   - `operation` 意味着链上编码的函数操作和参数，
+
   - `metadata` 意味着与唤醒相关的属性。
 
 对于**部署交易**，`txPayload` 由两个字段组成：
@@ -171,6 +175,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 - `chainCode = <source, metadata>`，
 
   - `source` 代表着链上编码的源代码，
+
   - `metadata` 代表着与链上编码和应用程序相关的属性。
 
 
@@ -184,4 +189,86 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 
 作为执行交易后的结果，submitting peer 计算出一个*状态更新 (`stateUpdate`)* 和 *版本依赖 (`verDep`)*，在数据库语言中也被称为*MVCC+postimage info*。
 
-回想到状态有键值对组成。所有的键值对条目是版本化的，也就是，每一个条目都包含有序的版本信息，当
+回想到状态有键值对组成。所有的键值对条目是版本化的，也就是，每一个条目都包含有序的版本信息，每一次键的值更新的时候，对应的版本信息都会增加。解释交易的 peer 记录所有被链上编码访问的键值对，要么是读要么是写，但是 peer 现在还不会更新它的状态，更具体的是：
+
+- `verDep` 是一个元组 `verDep = (readset, writeset)`。在 submitting peer 执行一笔交易前给定状态 `s`:
+
+  - 对于每一个被交易读取的键 `k`，`(k, s(k).version)` 被加入 `readset`。
+
+  - 对于每一个被交易修改的键 `k`，`(k, s(k).version)` 被加入 `writeset`。
+
+- 对于每一个被交易修改新值为 `v'`的键 `k`，`(k, v')` 被加入 `stateUpdate`。或者，`v'` 可以是新值相对于原先的值 (`s(k).value`) 的增量。
+
+一个具体的实现可能会将 `verDep.writeset` 和 `stateUpdate` 集成到一个简单的数据结构中。
+
+随后，`tran-proposal := (spID, chaincodeID, txContentBlob, stateUpdate, verDep)`，其中，`txContentBlob` 是链上编码/交易的具体信息。意图是让 `txContentBlob` 作为 `tx` 的代表来使用 (例如，`txContentBlob = tx.txPayload`)，更多细节将会在第六章给出。
+
+`tran-proposal` 的加密哈希被所有的节点用来唯一标识交易 (`tid`)，其中 `tid = HASH(tran-proposal)`。
+
+随后 submitting peer 发送交易 (如 `tran-proposal`) 给 链上编码所关心的 endorsers。根据链上编码中背书策略的解释和 peers 的可用性， Endorsing peers 被选择。例如，给定 `chaincodeID` 的交易被发送给所有的 endorsers，其中，会有一些 endorsers 离线，有一些拒绝和选择不为该交易背书。submitting peer 尝试同时满足背书策略和 endorsers 的可用性。
+
+Submitting peer `spID` 使用以下消息发送交易给一个 endorsing peer `epID`：
+
+`<PROPOSE, tx, tran-proposal>`
+
+**可能的优化：** 一个具体的实现可以优化在 `tx.chaincodeID` 与 `tran-proposal.chaincodeID` 中重复出现的 `chaincodeID`，还有在 `tx.txPayload` 与 `tran-proposal.txContentBlob` 中重复出现的 `txPayload`。
+
+最后，submitting peer 存储 `tran-proposal` 和 `tid` 于内存中，然后等待来自 endorsing peer 的回复。
+
+**可选的设计 (Alternative design)：** *以上描述的是 submitting peer 与 endorsers 点对点的直接交流通信。这也可以是一个被共识服务执行的函数操作；在这种情况下，需要决定 fabric 是必须遵从原子性广播来保证传输消息还是使用简单的点对点通信。在使用共识服务传输该消息的情况下，共识服务还要根据背书策略负责收集来自 endorsers 的背书并将其响应给 submitting peer。*
+
+**TODO：** 决定 submitting peer 与 endorsing peer 之间的通信是采用共识服务还是点对点。
+
+##### 2.3. 一个 endorser 接收并为一笔交易背书
+
+当一笔交易通过 `PROPOSE` 消息并根据 `tran-proposal.chaincodeID` 对应的链上编码传递给一个 endorser 的时候，endorsing peer 执行以下步骤：
+
+- endorsers 验证 `tx.clientSig` 和 确保 `tx.chaincodeID == tran-proposal.chaincodeID`。
+
+- endorsers 模拟这笔交易 (使用 `tx.txPayload`) 并验证状态更新和依赖信息是正确的。如果所有的都是有效的，endorsers 会对陈述 `(TRANSACTION-VALID, tid)` 进行数字签名产生 `epSig`。然后 endorsing peer 发送 `<TRANSACTION-VALID, tid, epSig>` 消息给 submitting peer (`tran-proposal.spID`)。
+
+- 其它，在 endorsers 上模拟交易执行产生和 `tran-proposal` 相同结果的失败情况下，我们区分为以下情况：
+
+  a. 如果 endorsers 获取到与 `tran-proposal.stateUpdate` 不同的状态更新结果，endorsers 对陈述 `<TRANSACTION-INVALID, tid, INCORRECT_STATE>` 进行签名，然后将签名过后的陈述发送给 submitting peer。
+
+  b. 如果 endorsers 意识到比 `tran-proposal.verDep` 更为先进的数据版本，它会对陈述 `<TRANSACTION-INVALID, tid, STALE_VERSION>` 签名，然后发送签名过后的陈述给 submitting peer。
+
+  c. 如果由于任何其他原因 (内部的背书策略，交易中出现的错误)，endorsers 不想为交易背书，它会对陈述 `<TRANSACTION-INVALID, tid, REJECTED>` 进行签名，然后发送签名过后的消息给 submitting peer。
+
+注意 endorsers 在这一步不会改变它的状态，更新不会被记录！
+
+**可选的设计 (Alternative design)：** *endorsing peer 干脆忽略掉通知 submitting peer 无效的交易，不会发送显示的 `TRANSACTION-INVALID` 通知。*
+
+**可选的设计 (Alternative design)：** *endorsing peer 提交 `TRANSACTION-VALID/TRANSACTION-INVALID` 消息给共识服务来传送给 submitting peer。*
+
+**TODO：** 决定使用以上哪种设计。
+
+##### 2.4. submitting peer 收集交易的背书，并通过共识服务广播
+
+submitting peer 等待直至它收集到足够的消息和签名 (对于`<TRANSACTION-VALID, tid>`)，如此，submitting peer 便可以得出结论：交易提案被成功背书 (可能包括来自自己的签名)，这些依赖于具体的链上编码背书策略 (第三章)。如果满足背书策略，交易就是背书过的 (endorsed)；注意交易还没有被提交 (committed)。使得交易被背书成功的签名的集合被称为背书 (endorsement)，peer 以 `endorsement` 来存储它们。
+
+对于一笔交易，如果 submitting peer 没有成功收集到足够的消息和签名来证明该交易被成功背书，它会丢弃该笔交易并且通知客户端。如果 `retryFlag` 被设置，那么 submitting peer 也许 (根据自身策略) 会从 step 2 重试提交过程。
+
+对于一笔成功背书的交易，我们现在开始 fabric 共识过程，submitting peer 使用 `broadcast(blob)` 来唤醒共识服务，其中，`blob = (tran-proposal, endorsement)`。
+
+##### 2.5. 共识服务传输一笔交易给 peers
+
+当事件 `deliver(seqno, prevhash, blob)` 发生并且一个 peer 已经应用了所有比 `seqno` 更低的 `blob`中的状态更新的时候，peer 做以下事情：
+
+- 根据 `blob.tran-proposal.chaincodeID` 指向的链上编码来检查 `blob.endorsement` 是否是有效的。(这步可以不用等比 `seqno` 小的状态更新被成功执行。)
+
+- 与此同时，它验证依赖 (`blob.tran-proposal.verDep`) 没有被违反。
+
+根据状态更新选择的持续特性 (consistency property) 或者孤立保证 (isolation guarantee)，依赖的验证可以以不同的方式来实现。例如，通过要求 `readset` 和 `writeset` 中每一个键相应的版本号与本地状态数据库中对应键的版本号相同来实现 **可串行化 (serializability)**，拒绝不满足该要求的交易。另外一个例子，当 `writeset` 中的所有键在本地数据库中有相同的版本号和在 `writeset` 中有相同的版本号，可以提供**快照隔离 (snapshot isolation)**。数据库文献包括更多的隔离保证。
+
+**TODO：** 决定是采用可串行化还是允许链上编码定义具体的隔离级别。
+
+- 如果所有的检查都通过，交易会被认为是*有效的*或者*committed*。这就意味着 peer 将该交易追加到总账中并且随后应用 `blob.tran-proposal.stateUpdate` 到本地持有的区块链状态上。只有有效的交易才能改变状态。
+
+- 如果有任何一步检查失败，交易会被视为是无效的，peer 会丢弃该交易。值得注意的是，无效的交易是不会被 commit 的，不会改变状态，并且不会被记录。
+
+另外，submitting peer 通知客户端丢弃的交易。如果 `retryFlag` 被设置，那么 submitting peer 也许 (根据自身策略) 会从 step 2 重试提交过程。
+
+#### Transaction flow
+
+![交易的工作流程](images/2016/10/Transaction-flow.png)
