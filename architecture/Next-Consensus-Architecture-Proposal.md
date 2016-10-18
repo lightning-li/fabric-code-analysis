@@ -312,3 +312,31 @@ submitting peer 等待直至它收集到足够的消息和签名 (对于`<TRANSA
 - 来自根据条件 `(Alice OR Bob) AND (any two of: Charlie, Dave, Eve, Frank, George)` 成立的 endorsing peers 的有效签名。
 
 - 来自7个 endorsers 中的任何5个 endorsers 的有效签名。(更通用的，对于拥有 n>3f 个 endorser 的链上编码，n 个 endorser 中任意 2f+1个节点的有效签名或者一组大于(n+f)/2个节点的有效签名)。
+
+- 假设每一个 endorser 都被赋有股份或者权重，就像 `{Alice=49, Bob=15, Charlie=15, Dave=10, Eve=7, Frank=3, George=1}`，总股份为100：策略需要来自超过一半股份的 endorser 的有效签名 (例如，一组 stake 结合在一起大于50的 endorser)，如 `{Alice, X}`，其中 `X` 是不同于 `George` 的所有其它的 endorser，或者 `{除 Alice 之外的所有其它 endorser}` 等等。
+
+- 上一个例子中的股权分配是静态的 (在链上编码的 metadata 中硬编码的)，还可以是动态调整的 (例如，依赖于链上编码的状态，可以在交易执行后被修改)。
+
+这些策略的用处依赖于应用程序自身，依赖于解决方案针对 endorser 的故障或者不正当行为所期望的弹性。
+
+##### 3.2. 实现
+
+典型地，背书策略会根据所需的来自 endorser 的签名来制定。链上编码的 metadata 必须包含相应的验证签名的 keys。
+
+一种背书策略通常由一个签名的集合组成。它能被每一个可以访问链上编码的 metadata (包含验证 keys) 的 peer 和 consenter 在本地评估，如此，节点既不需要和其它节点产生交互，也不需要访问状态来验证一个背书承诺。
+
+指向链上编码其它元数据的背书承诺也可以以同样的方式来评估。
+
+**TODO：** 正式确认背书策略，并设计一种实现。
+
+---
+
+#### 4. 区块链数据结构
+
+区块链由3种数据结构组成：a) *原始总账 (raw ledger)*，b) *区块链状态 (blockchain state)* 和 c) *验证总账 (validated ledger)*。区块链状态和验证总账被用来维持效率 - 它们可以从原始总账处产生。
+
+- *原始总账 (RL)。* 原始总账由共识服务向 peer 输出的所有数据组成。它是 `deliver(seqno, prevhash, blob)` 事件组成的一个序列，根据 `prevhash` 形成了一条哈希链。原始总账包含了有效和无效的交易信息，提供了一个可确认的包含成功的以及不成功的状态改变和状态改变尝试的历史，发生于系统的操作过程中。
+
+  原始总账允许 peers 重放所有的历史交易和重建区块链状态。它也向 submitting peer 提供了无效 (uncommitted) 交易相关信息，针对这些信息，submitting peer 可以执行2.5节描述的操作。
+
+- *区块链状态。* peer 以 KVS 的形式来维护区块链状态。
