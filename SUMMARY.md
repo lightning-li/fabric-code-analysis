@@ -8,5 +8,5 @@
     * [viper](workflow/viper.md)
     * [protos](workflow/protos.md)
 * [v1.0 architecture](architecture/README.md)
-    * [Next-Consensus-Architecture-Proposal](architecture/Next-Consensus-Architecture-Proposal.md)
-* [test](test.md)
+    * [Next-Consensus-Architecture-Proposal-zh](architecture/Next-Consensus-Architecture-Proposal-zh.md)
+    * [Next-Consensus-Architecture-Proposal-en](architecture/Next-Consensus-Architecture-Proposal-en.md)

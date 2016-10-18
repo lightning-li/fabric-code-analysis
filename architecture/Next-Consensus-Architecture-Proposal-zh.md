@@ -2,6 +2,8 @@
 
 *本文翻译于 https://github.com/hyperledger-archives/fabric/wiki/Next-Consensus-Architecture-Proposal*
 
+*[英文版](Next-Consensus-Architecture-Proposal-en.md)*
+
 讨论和留言在[这里](http://github.com/hyperledger/fabric/issues/1631)
 
 作者：Elli Androulaki, Christian Cachin, Angelo De Caro, Konstantinos Christidis, Chet Murthy, Binh Nguyen, Alessandro Sorniotti, and Marko Vukolić
@@ -339,4 +341,4 @@ submitting peer 等待直至它收集到足够的消息和签名 (对于`<TRANSA
 
   原始总账允许 peers 重放所有的历史交易和重建区块链状态。它也向 submitting peer 提供了无效 (uncommitted) 交易相关信息，针对这些信息，submitting peer 可以执行2.5节描述的操作。
 
-- *区块链状态。* peer 以 KVS 的形式来维护区块链状态。
+- *区块链状态。* peer 以 KVS 的形式来维护区块链状态。通过过滤掉
