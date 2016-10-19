@@ -13,16 +13,16 @@
 该架构与以前的设计( peers/consenters/endorsers 是一体的)相比有以下优势：
 - **链上编码信任的灵可用性(Chaincode trust flexibility)**。该架构使对链上编码的信任假设从对共识的信任假设中分离开来。换一种方式来说，共识服务可以由一系列的节点(consenters)来提供，允许部分节点失败或者有恶意行为；而对于每一个链上编码 endorsers 可以是不同的。
 
-- **可扩展性(Scalability)**。 当负责特指的链上编码的 endorser 节点与 consenters 节点是统计上独立的时候，系统的扩展性相对于全部的功能被相同的节点实现这一方式要更好。尤其是，当不同的链上编码定义了不相交的 endorsers 集合的时候，这样就会产生链上编码之间的分离，可以允许并行的执行链上编码(endorsement)。还会将可能很耗时的链上编码的执行过程也与共识服务过程分离开来。
+- **可扩展性(Scalability)**。 当负责特定的链上编码的 endorser 节点与 consenters 节点是统计上独立的时候，系统的扩展性相对于全部的功能被相同的节点实现这一方式要更好。尤其是，当不同的链上编码定义了不相交的 endorsers 集合的时候，这样就会产生链上编码之间的分离，可以允许并行地执行链上编码(endorsement)。还会将可能很耗时的链上编码的执行过程也与共识服务过程分离开来。
 
 - **机密性(Confidentiality)**。该架构使得对它所属的交易的内容、状态更新有具体机密性要求的链上编码的部署更加便利。
 
-- **共识模块化(Consensus modularity)**。该架构使模块化的，并且允许可插拨的共识实现。
+- **共识模块化(Consensus modularity)**。该架构是模块化的，并且允许可插拨的共识实现。
 
 #### 目录
 1. 系统架构
 2. 交易背书(endorsement)的基本工作流程
-3. 背书原则
+3. 背书策略
 4. 区块链数据结构
 5. 状态转移与检查点(checkpoint)
 6. 机密性
@@ -51,7 +51,7 @@
 更加正式地，区块链状态 `s` 被建模为映射关系 `K -> (V X N)` 的一个元素：
 - `K` 是键的集合
 - `V` 是值得集合
-- `N` 是一个无限有序的版本号集合。一对一映射函数 `netx : N -> N`，输入 `N` 的一个元素，返回下一个版本号。
+- `N` 是一个无限有序的版本号集合。一对一映射函数 `next : N -> N`，输入 `N` 的一个元素，返回下一个版本号。
 
 `V` 和 `N` 都包含一个特殊的元素 `\bot`，暗示 `N` 中最小的元素。初始的时候，所有的键都被映射到 `(\bot, \bot)`。对于 `s(k)=(v, ver)`，我们通过 `s(k).value` 来表示 `v`，`s(k).version` 来表示 `ver`。
 
@@ -76,7 +76,7 @@ KVS 操作建模为如下：
 
 2. **对等体 (Peer)**：提交认可交易并且维护状态和总账的副本。peers 有以下两种特殊角色：a. **submitting peer or submitter**，b. **endorsing peer or endorser**。
 
-3. **共识服务节点 (Consensus-service-node or consenter)**：运行着实现了传输保证 (例如原子性的广播)的 交流通信服务的节点，传输保证由运行共识算法来实现。
+3. **共识服务节点 (Consensus-service-node or consenter)**：运行着实现了传输保证 (例如原子性的广播)的交流通信服务的节点，传输保证由运行共识算法来实现。
 
 注意客户端和共识服务节点不维护总账和区块链状态，只有 peers 维护。
 
@@ -125,7 +125,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 
 总体上来说，共识服务保证了下列特性：
 
-- *同意 (Agreement)。* 对于发生在正确 peer 上的两个 `deliver()` 事件：`deliver(seqno, prevhash0, blob0)` 与 `deliver(seqno, prevhash1, blob1)`，有 `prevhash0==prevhash1` 和 `blob0==blob1`；
+- *一致性 (Agreement)。* 对于发生在正确 peer 上的两个 `deliver()` 事件：`deliver(seqno, prevhash0, blob0)` 与 `deliver(seqno, prevhash1, blob1)`，有 `prevhash0==prevhash1` 和 `blob0==blob1`；
 
 - *哈希链完整性 (Hashchain integrity)。* 对于发生在正确 peer 上的两个 `deliver()` 事件：`deliver(seqno-1, prevhash0, blob0)` 与 `deliver(seqno, prevhash, blob)`，有 `prevhash = HASH(seqno-1, prevhash0, blob0)`。
 
@@ -209,7 +209,7 @@ Peers 是 consenters 的客户端，Consenters 提供一个共享的交流通信
 
 `tran-proposal` 的加密哈希被所有的节点用来唯一标识交易 (`tid`)，其中 `tid = HASH(tran-proposal)`。
 
-随后 submitting peer 发送交易 (如 `tran-proposal`) 给 链上编码所关心的 endorsers。根据链上编码中背书策略的解释和 peers 的可用性， Endorsing peers 被选择。例如，给定 `chaincodeID` 的交易被发送给所有的 endorsers，其中，会有一些 endorsers 离线，有一些拒绝和选择不为该交易背书。submitting peer 尝试同时满足背书策略和 endorsers 的可用性。
+随后 submitting peer 发送交易 (如 `tran-proposal`) 给链上编码所关心的 endorsers。根据链上编码中背书策略的解释和 peers 的可用性， Endorsing peers 被选择。例如，给定 `chaincodeID` 的交易被发送给所有的 endorsers，其中，会有一些 endorsers 离线，有一些拒绝和选择不为该交易背书。submitting peer 尝试同时满足背书策略和 endorsers 的可用性。
 
 Submitting peer `spID` 使用以下消息发送交易给一个 endorsing peer `epID`：
 
